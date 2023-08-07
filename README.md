@@ -6,16 +6,18 @@ This is not optimized for single log file analysis, tools such as [AdvantageScop
 
 # WIP Project: Won't Even Compile At The Moment
 
-Build: `python -m build`
+Build: `maturin build --release`
 
-Install Local: `python -m pip install .`
+Install local: `python -m pip install .`
 
-Lint: `ruff check .`
+Lint py: `ruff check .`
+
+Lint rust: `cargo clippy`
 
 Format: `./format.sh`
 
-Publish: `python -m twine upload dist/*`
+Publish: `twine upload ./target/wheels/*`
 
-Test Publish: `python -m twine upload --repository testpypi dist/*.tar.gz`
+Test publish: `twine upload --repository=testpypi ./target/wheels/*`
 
-These commands attempt to upload any files in the `dist` directory, which should be periodically emptied.
+The project needs to be freshly built before publishing. Twine will try to publish all files in `./target/wheels`, including old builds, so running `rm -rf ./target/wheels` (or its Windows equivalent) is suggested.

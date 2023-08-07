@@ -1,3 +1,29 @@
 [build-system]
-requires = ["setuptools>=61.0", "wheel", "pybind11~=2.6.1"]
-build-backend = "setuptools.build_meta"
+requires = ["maturin>=1.2,<2.0"]
+build-backend = "maturin"
+
+[project]
+name = "frcLogLens"
+version = "0.0.11"
+maintainers = [
+  {name = "Thomas Anderson", email = "tande92834@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.7"
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Natural Language :: English",
+    "Programming Language :: Rust",
+    "Programming Language :: Python :: 3"
+]
+depencencies = ["wpiutil.log >= 2023"]
+
+[project.urls]
+Homepage = "https://github.com/Team997Coders/frclogLens"
+# Documentation = "" TODO
+Repository = "https://github.com/Team997Coders/frclogLens.git"
+
+[tool.maturin]
+features = ["pyo3/extension-module"]
+python-source = "src/py"
