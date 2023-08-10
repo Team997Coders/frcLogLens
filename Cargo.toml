@@ -6,7 +6,7 @@ publish = false
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [lib]
-name = "frc_log_lens"
+name = "rs_frc_log_lens"
 crate-type = ["cdylib"]
 path = "src/rust/lib.rs"
 

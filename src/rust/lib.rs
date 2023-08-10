@@ -40,7 +40,7 @@ fn guess_the_number() {
 /// the `lib.name` setting in the `Cargo.toml`, else Python will not be able to
 /// import the module.
 #[pymodule]
-fn frc_log_lens(_py: Python, m: &PyModule) -> PyResult<()> {
+fn rs_frc_log_lens(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(guess_the_number, m)?)?;
 
     Ok(())

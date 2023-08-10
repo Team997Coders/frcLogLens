@@ -1,6 +1,5 @@
 [build-system]
-requires = ["maturin>=1.2,<2.0"]
-build-backend = "maturin"
+requires = ["setuptools", "wheel", "setuptools-rust"]
 
 [project]
 name = "frcLogLens"
@@ -17,7 +16,6 @@ classifiers = [
     "Programming Language :: Rust",
     "Programming Language :: Python :: 3"
 ]
-depencencies = ["wpiutil.log >= 2023"]
 
 [project.urls]
 Homepage = "https://github.com/Team997Coders/frclogLens"
