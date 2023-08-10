@@ -3,7 +3,7 @@ requires = ["setuptools", "wheel", "setuptools-rust"]
 
 [project]
 name = "frcLogLens"
-version = "0.0.11"
+version = "0.0.12"
 maintainers = [
   {name = "Thomas Anderson", email = "tande92834@gmail.com"}
 ]
