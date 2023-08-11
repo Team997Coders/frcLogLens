@@ -1,6 +1,6 @@
 use pyo3::pyclass;
 
-use crate::base_log_field::BaseLogField;
+use crate::base_log_field::{BaseLogEntry, BaseLogField};
 
 use std::collections::BTreeMap;
 
@@ -8,15 +8,11 @@ use std::collections::BTreeMap;
 pub struct StringLogField {}
 
 impl BaseLogField<String> for StringLogField {
-    fn get_all_entries(&self) -> BTreeMap<String, f64> {
+    fn get_final_timestamp(&self) -> f64 {
         todo!()
     }
 
-    fn get_unique_values(&self) -> Vec<String> {
-        todo!()
-    }
-
-    fn get_unique_timestamps(&self) -> Vec<f64> {
+    fn get_entries_sorted(&self) -> Vec<BaseLogEntry<String>> {
         todo!()
     }
 
@@ -25,6 +21,10 @@ impl BaseLogField<String> for StringLogField {
     }
 
     fn time_count_unique_values(&self) -> BTreeMap<String, f64> {
+        todo!()
+    }
+
+    fn squash(&self) -> Box<BaseLogEntry<String>> {
         todo!()
     }
 }
