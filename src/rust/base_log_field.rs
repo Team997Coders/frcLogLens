@@ -72,25 +72,27 @@ pub trait BaseLogField<T: LoggableType> {
         let mut output: BTreeMap<T, i32> = BTreeMap::new();
 
         let mut previous_value: Option<T> = None;
-        
+
         for entry in self.get_entries_sorted() {
-            let mut should_increment: bool = false;
+            let should_increment: bool;
 
             if !output.contains_key(&entry.value) {
-                output.insert(entry.value, 0);
+                output.insert(entry.value.clone(), 0);
             }
 
-            match previous_value {
-                Some(val) => if val != entry.value {should_increment = true},
-                _ => should_increment = true,
+            if !previous_value.is_none() {
+                should_increment = previous_value.clone().unwrap() != entry.value;
+                // safe unwrap
+            } else {
+                should_increment = true;
             }
 
             if should_increment {
                 let count: i32 = *output.get(&entry.value).unwrap(); // safe unwrap
 
-                output.insert(entry.value, count + 1);
-                
-                previous_value = Some(entry.value);
+                output.insert(entry.value.clone(), count + 1);
+
+                previous_value = Some(entry.value.clone());
             }
         }
 
