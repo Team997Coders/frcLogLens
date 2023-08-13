@@ -1,5 +1,4 @@
 mod base_log_field;
-mod string_log_field;
 
 use pyo3::prelude::*;
 
@@ -7,8 +6,6 @@ use pyo3::prelude::*;
 /// the `lib.name` setting in the `Cargo.toml`, else Python will not be able to
 /// import the module.
 #[pymodule]
-fn rs_frc_log_lens(_py: Python, m: &PyModule) -> PyResult<()> {
-    m.add_class::<string_log_field::StringLogField>()?;
-
+fn rs_frc_log_lens(_py: Python, _m: &PyModule) -> PyResult<()> {
     Ok(())
 }

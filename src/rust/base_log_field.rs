@@ -20,18 +20,18 @@ impl<T: LoggableType> Clone for BaseLogEntry<T> {
 
 pub trait BaseLogField<T: LoggableType + 'static> {
     /**
-     * Returns the timestamp of the end of the log file. This does not need to coorespond to an entry.
-     */
+    Returns the timestamp of the end of the log file. This does not need to coorespond to an entry.
+    */
     fn get_final_timestamp(&self) -> f64;
 
     /**
-     * Gets a Vector of BaseLogEntries, sorted in ascending order by their timestamps.
-     */
+    Gets a Vector of BaseLogEntries, sorted in ascending order by their timestamps.
+    */
     fn get_entries_sorted(&self) -> Vec<BaseLogEntry<T>>;
 
     /**
-     * Returns a Vector of all unique values contained in the log field.
-     */
+    Returns a Vector of all unique values contained in the log field.
+    */
     fn get_unique_values(&self) -> Vec<T> {
         let mut unique_vals: Vec<T> = Vec::new();
 
@@ -44,8 +44,8 @@ pub trait BaseLogField<T: LoggableType + 'static> {
     }
 
     /**
-     * Returns a vector of all unique timestamps contained in the log field.
-     */
+    Returns a vector of all unique timestamps contained in the log field.
+    */
     fn get_unique_timestamps(&self) -> Vec<f64> {
         let mut unique_timestamps: Vec<f64> = Vec::new();
 
@@ -75,8 +75,8 @@ pub trait BaseLogField<T: LoggableType + 'static> {
     }
 
     /**
-     * Returns a map, sorted in ascending order, of values to the number of non-consecutive occurances they have.
-     */
+    Returns a map, sorted in ascending order, of values to the number of non-consecutive occurances they have.
+    */
     fn count_unique_values(&self) -> BTreeMap<T, i32> {
         let mut output: BTreeMap<T, i32> = BTreeMap::new();
 
@@ -109,8 +109,8 @@ pub trait BaseLogField<T: LoggableType + 'static> {
     }
 
     /**
-     * Returns a map, sorted in ascending order, of values to the number of occurances (including consecutive) they have.
-     */
+    Returns a map, sorted in ascending order, of values to the number of occurances (including consecutive) they have.
+    */
     fn count_unique_values_consecutive(&self) -> BTreeMap<T, i32> {
         let mut output: BTreeMap<T, i32> = BTreeMap::new();
 
@@ -128,15 +128,15 @@ pub trait BaseLogField<T: LoggableType + 'static> {
     }
 
     /**
-     * Returns a map, sorted in ascending order, of values to the cumulative amount of time that they occupy (sum of first consecutive timestamp to first timestamp of another value over the lifetime of the field).
-     */
+    Returns a map, sorted in ascending order, of values to the cumulative amount of time that they occupy (sum of first consecutive timestamp to first timestamp of another value over the lifetime of the field).
+    */
     fn time_count_unique_values(&self) -> BTreeMap<T, f64> {
         todo!();
     }
 
     /**
-     * Returns a pointer to a copy of this object, but with consecutive duplicates and entries with timestamps after the final timestamp removed.
-     */
+    Returns a pointer to a copy of this object, but with consecutive duplicates and entries with timestamps after the final timestamp removed.
+    */
     fn squash(&self) -> Box<dyn BaseLogField<T>> {
         let mut new_contents: Vec<BaseLogEntry<T>> = Vec::new();
 
@@ -157,25 +157,66 @@ pub trait BaseLogField<T: LoggableType + 'static> {
             }
         }
 
-        struct Squashed<G: LoggableType> {
-            // inner impl of LoggableType for our return
-            contents: Vec<BaseLogEntry<G>>,
-            max_timestamp: f64,
-        }
-
-        impl<G: LoggableType + 'static> BaseLogField<G> for Squashed<G> {
-            fn get_final_timestamp(&self) -> f64 {
-                return self.max_timestamp;
-            }
-
-            fn get_entries_sorted(&self) -> Vec<BaseLogEntry<G>> {
-                return self.contents.clone();
-            }
-        }
-
-        return Box::new(Squashed {
-            contents: new_contents,
-            max_timestamp: self.get_final_timestamp(),
-        });
+        return _get_base_log_field_impl(new_contents, self.get_final_timestamp());
     }
+}
+
+/**
+Returns a pointer to a log field composed of the provided fields. The timestamp associated with each log entry is retained.
+
+Note that this is likely to create situations with multiple values mapped to the same timestamp, but is expected behavior of BaseLogField anyway.
+*/
+pub fn merge<T: LoggableType>(fields: Vec<Box<dyn BaseLogField<T>>>) -> Box<dyn BaseLogField<T>> {
+    let mut new_contents: Vec<BaseLogEntry<T>> = Vec::new();
+    
+    todo!();
+}
+
+/**
+Returns a pointer to a log field composed of the provided fields. The timestamp for all fields is adjusted such that "0" is the maximum timestamp of the previous (or still 0 if it's the first field).
+*/
+pub fn append<T: LoggableType + 'static>(
+    fields: Vec<Box<dyn BaseLogField<T>>>,
+) -> Box<dyn BaseLogField<T>> {
+    let mut new_contents: Vec<BaseLogEntry<T>> = Vec::new();
+
+    let mut timestamp_base: f64 = 0.0;
+
+    for field in fields {
+        for entry in field.get_entries_sorted() {
+            new_contents.push(BaseLogEntry {
+                value: entry.value.clone(),
+                timestamp_seconds: entry.timestamp_seconds + timestamp_base,
+            });
+        }
+
+        timestamp_base += field.get_final_timestamp();
+    }
+
+    return _get_base_log_field_impl(new_contents, timestamp_base);
+}
+
+fn _get_base_log_field_impl<T: LoggableType + 'static>(
+    contents: Vec<BaseLogEntry<T>>,
+    max_timestamp: f64,
+) -> Box<dyn BaseLogField<T>> {
+    struct InnerImpl<T: LoggableType> {
+        contents: Vec<BaseLogEntry<T>>,
+        max_timestamp: f64,
+    }
+
+    impl<G: LoggableType + 'static> BaseLogField<G> for InnerImpl<G> {
+        fn get_final_timestamp(&self) -> f64 {
+            return self.max_timestamp;
+        }
+
+        fn get_entries_sorted(&self) -> Vec<BaseLogEntry<G>> {
+            return self.contents.clone();
+        }
+    }
+
+    return Box::new(InnerImpl {
+        contents,
+        max_timestamp,
+    });
 }
