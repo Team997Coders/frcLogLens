@@ -24,7 +24,7 @@ impl BaseLogField<String> for StringLogField {
         todo!()
     }
 
-    fn squash(&self) -> Box<BaseLogEntry<String>> {
+    fn squash(&self) -> Box<(dyn BaseLogField<String>)> {
         todo!()
     }
 }
